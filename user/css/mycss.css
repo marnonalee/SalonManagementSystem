@@ -1,0 +1,149 @@
+body {
+    font-family: 'Poppins', sans-serif;
+  }
+  
+  .content-container {
+    background-color: #fff;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    max-width: 800px;
+    margin: 5rem auto 0;
+  }
+  
+  table tbody tr:nth-child(odd) {
+    background-color: #f9f9f9;
+  }
+  
+  table tbody tr:hover {
+    background-color: #f1f1f1;
+    box-shadow: 0 2px 10px rgba(255, 192, 203, 0.2);
+  }
+  
+  .action-btn-container {
+    display: flex;
+    gap: 12px;
+    justify-content: center; /* center horizontally */
+    align-items: center;     /* center vertically */
+  }
+  
+  .action-btn {
+    cursor: pointer;
+    background-color: transparent;
+    border: none;
+    padding: 0.5rem;
+    color: #4CAF50;
+    transition: color 0.3s ease;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative; /* for tooltip */
+    border-radius: 6px;
+  }
+  
+  .action-btn:hover {
+    color: #ff6347;
+  }
+  
+  .action-btn i {
+    font-size: 1.2rem;
+  }
+  
+  /* Optional different colors for specific actions */
+  .action-btn.cancel {
+    color: #e3342f;
+  }
+  .action-btn.cancel:hover {
+    color: #a71d1d;
+  }
+  
+  .action-btn.reschedule {
+    color: #3490dc;
+  }
+  .action-btn.reschedule:hover {
+    color: #1d6fa5;
+  }
+  
+  /* Tooltip styling */
+  .tooltip {
+    visibility: hidden;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: #fff;
+    text-align: center;
+    border-radius: 5px;
+    padding: 5px 8px;
+    position: absolute;
+    z-index: 10;
+    top: -35px;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    white-space: nowrap;
+    font-size: 0.75rem;
+    transition: opacity 0.3s;
+    pointer-events: none;
+  }
+  
+  .action-btn:hover .tooltip {
+    visibility: visible;
+    opacity: 1;
+  }
+  
+  /* Mobile styling adjustments */
+  @media screen and (max-width: 768px) {
+    .content-container {
+      margin: 2rem 1rem;
+      padding: 1rem;
+    }
+  
+    table thead {
+      display: none;
+    }
+  
+    table tbody tr {
+      display: flex;
+      flex-direction: column;
+      border-bottom: 1px solid #e5e7eb;
+      margin-bottom: 1rem;
+      padding-bottom: 1rem;
+    }
+  
+    table tbody td {
+      display: block;
+      padding: 0.5rem 1rem;
+      position: relative;
+    }
+  
+    table tbody td::before {
+      content: attr(data-label);
+      font-weight: 600;
+      text-transform: capitalize;
+      color: #4b5563;
+      display: block;
+      margin-bottom: 0.3rem;
+    }
+  
+    .action-btn-container {
+      justify-content: flex-start;
+      gap: 8px;
+    }
+  }
+  
+  /* Add animation for fade-in effect on table rows */
+  tbody tr {
+    animation: fadeIn 0.4s ease-in;
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  

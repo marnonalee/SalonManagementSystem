@@ -1,0 +1,31 @@
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: #9ca3af; /* Tailwind: text-gray-400 */
+    font-weight: 400;
+    font-size: 1rem;
+    transition: all 0.2s ease-in-out;
+    text-decoration: none;
+    margin-top: 0.75rem; /* Added spacing between links */
+  }
+  
+  .sidebar-link:hover {
+    color: #374151; /* Tailwind: text-gray-700 */
+  }
+  
+  .sidebar-link i {
+    width: 1.5rem;
+    font-size: 1rem;
+    text-align: center;
+  }
+  
+  .sidebar-link.active {
+    color: #ec4899; /* Tailwind: text-pink-500 */
+    font-weight: 400;
+  }
+  
+  .sidebar-link.active i {
+    color: #ec4899;
+  }
+  
