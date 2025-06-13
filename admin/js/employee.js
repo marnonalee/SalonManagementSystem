@@ -144,21 +144,23 @@
         };
       }
     });
-      function showSuccessModal() {
-      const modal = document.getElementById('employeeArchiveModal');
-      modal.style.display = 'flex';
+     function showSuccessModal() {
+      const modal = document.getElementById('successModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('opacity-100');
 
-      document.getElementById('closeArchiveModalBtn').onclick = () => {
-        modal.style.display = 'none';
-        window.location.href = window.location.pathname;
-      };
+      setTimeout(() => {
+        modal.classList.add('hidden');
+      }, 3000);
     }
 
+    const closeSuccessModalBtn = document.getElementById('closeSuccessModalBtn');
     if (closeSuccessModalBtn) {
       closeSuccessModalBtn.addEventListener('click', () => {
         document.getElementById('successModal').classList.add('hidden');
       });
     }
+
 
     window.addEventListener('click', (e) => {
       if (e.target === document.getElementById('successModal')) {

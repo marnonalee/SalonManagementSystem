@@ -33,7 +33,7 @@ $admin_username = isset($_SESSION['admin_username']) ? $_SESSION['admin_username
             <a class="sidebar-link flex items-center space-x-3 px-3 py-2 rounded-md bg-slate-200 text-slate-900" href="employees.php"><i class="fas fa-user-tie"></i><span>Employees</span></a>
             <a class="sidebar-link" href="services.php"><i class="fas fa-cogs"></i><span>Services</span></a>
             <a class="sidebar-link " href="user_management.php"><i class="fas fa-users-cog"></i><span>Users Management</span></a>
-            <a class="sidebar-link" href="payments.php"><i class="fas fa-file-invoice-dollar"></i><span>Payment Records</span></a>
+            <a class="sidebar-link" href="payments.php"><i class="fas fa-receipt"></i><span>Payment Records</span></a>
             <a class="sidebar-link" href="payments_reports.php"><i class="fas fa-file-invoice-dollar"></i><span>Payment Methods</span></a>
             <a class="sidebar-link" href="beauty_guide.php"><i class="fas fa-book-open"></i><span>Beauty Guide</span></a>
             <a class="sidebar-link" href="calendar_setting.php"> <i class="fas fa-calendar-alt"></i> Calendar Settings</a>
@@ -282,13 +282,13 @@ $admin_username = isset($_SESSION['admin_username']) ? $_SESSION['admin_username
       </div>
     </div>
 
-    <div id="successModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden z-30 flex justify-center items-center">
-      <div class="bg-white p-6 rounded-lg w-96">
-        <h3 class="text-xl font-semibold text-gray-900 mb-4">Success</h3>
-        <p class="text-gray-700 mb-4">Employee information updated successfully!</p>
-        <button id="closeSuccessModalBtn" class="bg-slate-600 text-white px-4 py-2 rounded-md">Ok</button>
-      </div>
-    </div>
+    <div id="successModal" class="fixed bottom-4 right-4 bg-green-500 text-white px-6 py-4 rounded-lg shadow-lg z-50 hidden transition-opacity duration-300">
+  <div class="flex justify-between items-center">
+    <p>Employee information updated successfully!</p>
+    <button id="closeSuccessModalBtn" class="ml-4 text-white font-bold">&times;</button>
+  </div>
+</div>
+
 
 
     <div id="employeeArchiveModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); 

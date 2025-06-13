@@ -591,6 +591,26 @@ $notifDropdownResult = $stmt->get_result();
     ?>
   };
 
+
+let activityTimer;
+
+function sendActivityUpdate() {
+  fetch("php/update_activity.php", { method: "POST" });
+}
+
+function resetTimer() {
+  clearTimeout(activityTimer);
+  activityTimer = setTimeout(() => {
+    sendActivityUpdate(); 
+  }, 3000); 
+}
+
+['mousemove', 'keydown', 'scroll', 'click'].forEach(event => {
+  document.addEventListener(event, resetTimer);
+});
+
+resetTimer(); 
+
 </script>
 
 </body>

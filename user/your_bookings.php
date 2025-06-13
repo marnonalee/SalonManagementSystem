@@ -135,7 +135,10 @@ $totalPages = ceil($totalRows / $limit);
               'Approved' => 'green',
               'Pending' => 'yellow',
               'Rejected' => 'red',
-              'No Payment' => 'gray'
+              'No Payment' => 'gray',
+              'Paid'  => 'green',
+              'Pending verification'  => 'gray',
+              'Unpaid'  => 'orange'
             ];
             $color = $paymentColors[$paymentStatus] ?? 'gray';
 
@@ -168,7 +171,7 @@ $totalPages = ceil($totalRows / $limit);
 
             $paymentStatusLower = strtolower($paymentStatus);
             $disablePayNow = in_array($paymentStatusLower, ['pending verification', 'paid']) || $statusLower === 'cancelled';
-            $disableArchive = in_array($paymentStatusLower, ['unpaid', 'pending verification']);
+            $disableArchive = in_array($paymentStatusLower, ['pending', 'pending verification']);
           ?>
           <tr id="appointment-<?= $row['appointment_id'] ?>" data-status="<?= $statusLower ?>" class="bg-gray-50">
             <td class="py-2 px-4 border-b number-cell"></td>

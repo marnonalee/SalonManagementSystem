@@ -18,7 +18,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $confirm_password = $_POST['confirm_password'] ?? '';
     $old_password = $_POST['old_password'] ?? '';
 
-    // Update username if changed
     if ($new_username !== $admin_username) {
         $stmt = $conn->prepare("SELECT COUNT(*) FROM admins WHERE username = ?");
         $stmt->bind_param("s", $new_username);
@@ -43,12 +42,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
     }
 
-    // Update password if new password is provided
     if (!$error && !empty($new_password)) {
         if (empty($old_password)) {
             $error = "Please enter your old password to change it.";
         } else {
-            // Get current hashed password
             $stmt = $conn->prepare("SELECT password FROM admins WHERE username = ?");
             $stmt->bind_param("s", $admin_username);
             $stmt->execute();
@@ -56,7 +53,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $stmt->fetch();
             $stmt->close();
 
-            // Verify old password
             if (!password_verify($old_password, $current_hashed_password)) {
                 $error = "Old password is incorrect!";
             } else {
@@ -107,7 +103,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <a class="sidebar-link" href="employees.php"><i class="fas fa-user-tie"></i><span>Employees</span></a>
             <a class="sidebar-link" href="services.php"><i class="fas fa-cogs"></i><span>Services</span></a>
             <a class="sidebar-link " href="user_management.php"><i class="fas fa-users-cog"></i><span>Users Management</span></a>
-            <a class="sidebar-link" href="payments.php"><i class="fas fa-file-invoice-dollar"></i><span>Payment Records</span></a>
+            <a class="sidebar-link" href="payments.php"><i class="fas fa-receipt"></i><span>Payment Records</span></a>
             <a class="sidebar-link" href="payments_reports.php"><i class="fas fa-file-invoice-dollar"></i><span>Payment Methods</span></a>
             <a class="sidebar-link" href="beauty_guide.php"><i class="fas fa-book-open"></i><span>Beauty Guide</span></a>
             <a class="sidebar-link" href="calendar_setting.php"> <i class="fas fa-calendar-alt"></i> Calendar Settings</a>

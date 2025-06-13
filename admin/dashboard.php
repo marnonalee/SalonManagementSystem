@@ -91,12 +91,12 @@ $todaysAppointments = $row['total'];
         </div>
 
         <nav class="flex flex-col text-base space-y-2">
-            <a class="sidebar-link flex items-center space-x-3 px-3 py-2 rounded-md bg-slate-200 text-slate-900" href="dashboard.php"><i class="fas fa-th-large"></i><span>Dashboard</span></a>
-            <a class="sidebar-link" href="appointments.php"><i class="fas fa-calendar-alt"></i><span>Appointments</span></a>
+            <a class="sidebar-link flex items-center space-x-3 px-3 py-2 rounded-md bg-slate-200 text-slate-900" href="dashboard.php"><i class="fas fa-th-large"></i><span> Dashboard</span></a>
+            <a class="sidebar-link" href="appointments.php"><i class="fas fa-calendar-alt"></i><span> Appointments</span></a>
             <a class="sidebar-link" href="employees.php"><i class="fas fa-user-tie"></i><span>Employees</span></a>
             <a class="sidebar-link" href="services.php"><i class="fas fa-cogs"></i><span>Services</span></a>
             <a class="sidebar-link " href="user_management.php"><i class="fas fa-users-cog"></i><span>Users Management</span></a>
-            <a class="sidebar-link" href="payments.php"><i class="fas fa-file-invoice-dollar"></i><span>Payment Records</span></a>
+            <a class="sidebar-link" href="payments.php"><i class="fas fa-receipt"></i><span>Payment Records</span></a>
             <a class="sidebar-link" href="payments_reports.php"><i class="fas fa-file-invoice-dollar"></i><span>Payment Methods</span></a>
             <a class="sidebar-link" href="beauty_guide.php"><i class="fas fa-book-open"></i><span>Beauty Guide</span></a>
             <a class="sidebar-link" href="calendar_setting.php"> <i class="fas fa-calendar-alt"></i> Calendar Settings</a>
