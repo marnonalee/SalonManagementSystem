@@ -70,7 +70,11 @@ if ($stmt->num_rows > 0) {
 }
 
 if ($success) {
-    echo json_encode(['message' => 'Payment proof submitted successfully. Awaiting verification.']);
+    echo json_encode([
+        'success' => true,
+        'message' => 'Payment proof submitted successfully. Awaiting verification.'
+      ]);
+      
 } else {
     echo json_encode(['message' => 'Database error: ' . $stmt->error]);
 }

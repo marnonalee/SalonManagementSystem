@@ -37,6 +37,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $user_id = findUserByEmail($conn, 'admins', $email, 'id');
             $user_type = 'admin';
         }
+
         if ($user_id === null) {
             $user_id = findUserByEmail($conn, 'employees', $email, 'employee_id');
             $user_type = 'employee';
@@ -60,7 +61,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
                     $mail->Port = 587;
 
-                    $mail->setFrom('salonaandb@gmail.com', 'Stylicle');
+                    $mail->setFrom('salonaandb@gmail.com', 'Adore & Beauty');
                     $mail->addAddress($email);
                     $mail->Subject = 'Password Reset Request';
 
@@ -82,7 +83,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
             $insert->close();
         } else {
-            $message = "If this email exists, a password reset code has been sent.";
+            $message = "No account found with this email.";
         }
     }
     $conn->close();
@@ -106,18 +107,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <div class="brand-logo">
       <img src="images/logo1.png" alt="Beauty & Style Logo" class="h-10 w-10">
     </div>
-
     <nav class="flex space-x-6 mx-auto">
-      <a href="#home"  id="nav-home" class="nav-link flex items-center gap-2 px-3 py-2 rounded-lg font-medium text-tale-500 hover:text-tale-900 hover:bg-gray-100 transition-colors duration-300">
+      <a href="#home" class="nav-link flex items-center gap-2 px-3 py-2 rounded-lg font-medium text-tale-500 hover:text-tale-900 hover:bg-gray-100 transition-colors duration-300">
         <i class="fas fa-home"></i> Home
       </a>
-      <a href="#services"  id="nav-services" class="nav-link flex items-center gap-2 px-3 py-2 rounded-lg font-medium text-tale-500 hover:text-tale-900 hover:bg-gray-100 transition-colors duration-300">
+      <a href="#services" class="nav-link flex items-center gap-2 px-3 py-2 rounded-lg font-medium text-tale-500 hover:text-tale-900 hover:bg-gray-100 transition-colors duration-300">
         <i class="fas fa-concierge-bell"></i> Our Services
       </a>
-      <a href="#contact"  id="nav-contact"  class="nav-link flex items-center gap-2 px-3 py-2 rounded-lg font-medium text-tale-500 hover:text-tale-900 hover:bg-gray-100 transition-colors duration-300">
+      <a href="#contact" class="nav-link flex items-center gap-2 px-3 py-2 rounded-lg font-medium text-tale-500 hover:text-tale-900 hover:bg-gray-100 transition-colors duration-300">
         <i class="fas fa-envelope"></i> Contact Us
       </a>
-      <a href="guide.php"  class="flex items-center gap-2 px-3 py-2 rounded-lg font-medium text-tale-500 hover:text-tale-900 hover:bg-gray-100 transition-colors duration-300">
+      <a href="guide.php" class="flex items-center gap-2 px-3 py-2 rounded-lg font-medium text-tale-500 hover:text-tale-900 hover:bg-gray-100 transition-colors duration-300">
         <i class="fas fa-book"></i> Beauty & Style Guide
       </a>
     </nav>
@@ -127,7 +127,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       </a>
       <a href="sign-in.php" class="px-5 py-2 rounded-full border-2 border-gray-900 text-gray-900 font-semibold bg-transparent hover:bg-gray-900 hover:text-white transition duration-300 transform hover:scale-105">
         Signup
-    </a>
+      </a>
     </div>
   </div>
 </header>
@@ -137,7 +137,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <h1 class="text-2xl font-bold text-center mb-6">Forgot Password</h1>
 
         <?php if ($message): ?>
-            <div class="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded">
+            <div class="mb-4 bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-2 rounded">
                 <?= htmlspecialchars($message) ?>
             </div>
         <?php endif; ?>
@@ -155,6 +155,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
             <button type="submit" class="w-full bg-teal-600 text-white p-2 rounded hover:bg-teal-700">Send Verification Code</button>
         </form>
+
         <p class="mt-4 text-center text-gray-600 text-sm">
             Remember your password? <a href="login.php" class="text-teal-600 hover:underline">Login here</a>.
         </p>

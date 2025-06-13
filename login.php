@@ -48,6 +48,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 exit();
             }
         }
+
         $user_sql = "SELECT user_id, username, email, phone, password, status FROM users WHERE email = ? OR username = ?";
         $user_stmt = $conn->prepare($user_sql);
         $user_stmt->bind_param("ss", $emailOrUser, $emailOrUser);
@@ -62,12 +63,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $_SESSION['user'] = $user['username'];
                 $_SESSION['email'] = $user['email'];
                 $_SESSION['phone'] = $user['phone'];
-                header("Location: user/landing.php");
+                header("Location: user/services.php");
                 exit();
             }
         }
-        if (empty($error)) {
-            $error = "Incorrect email or password.";
+
+        if (
+            !$admin_result->num_rows &&
+            !$employee_result->num_rows &&
+            !$user_result->num_rows
+        ) {
+            $error = "No user found.";
+        } elseif (empty($error)) {
+            $error = "Incorrect password.";
         }
 
         $admin_stmt->close();
@@ -95,7 +103,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <div class="brand-logo">
       <img src="images/logo1.png" alt="Beauty & Style Logo" class="h-10 w-10">
     </div>
-
     <nav class="flex space-x-6 mx-auto">
       <a href="index.php#home" class="nav-link flex items-center gap-2 px-3 py-2 rounded-lg font-medium text-tale-500 hover:text-tale-900 hover:bg-gray-100 transition-colors duration-300">
         <i class="fas fa-home"></i> Home
@@ -110,14 +117,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <i class="fas fa-book"></i> Beauty & Style Guide
       </a>
     </nav>
-
     <div class="flex space-x-4">
-      <a href="login.php" 
-         class= "px-5 py-2 rounded-full border-2 border-gray-900 text-white font-semibold bg-gray-900 hover:bg-gray-700 transition duration-300 transform scale-105">
+      <a href="login.php" class="px-5 py-2 rounded-full border-2 border-gray-900 text-white font-semibold bg-gray-900 hover:bg-gray-700 transition duration-300 transform scale-105">
         Login
       </a>
-      <a href="sign-in.php" 
-         class="px-5 py-2 rounded-full border-2 border-gray-900 text-gray-900 font-semibold bg-transparent hover:bg-gray-900 hover:text-white transition duration-300 transform hover:scale-105">
+      <a href="sign-in.php" class="px-5 py-2 rounded-full border-2 border-gray-900 text-gray-900 font-semibold bg-transparent hover:bg-gray-900 hover:text-white transition duration-300 transform hover:scale-105">
         Signup
       </a>
     </div>
@@ -133,7 +137,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </div>
     
     <h1 class="text-2xl font-bold text-center mb-4">Login to Your Account</h1>
-    <p class="text-center text-gray-600 mb-6">Log in to get real-time updates on things that interest you.</p>
 
     <?php if (!empty($error)): ?>
       <div class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
@@ -143,24 +146,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <form action="login.php" method="POST">
       <div class="mb-4">
-        <input type="text" name="email_or_username" placeholder="Enter Username or Email" 
-               maxlength="50"
-               class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-600" 
-               required>
+        <input type="text" name="email_or_username" placeholder="Enter Username or Email" maxlength="50" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-600" required>
       </div>
       <div class="mb-1 flex justify-between items-center">
         <span></span>
         <a href="forgot_password.php" class="text-sm text-teal-600 hover:underline">Forgot Password?</a>
       </div>
       <div class="mb-4">
-        <input type="password" name="password" placeholder="Enter Password" 
-               maxlength="100"
-               class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-600" 
-               required>
+        <input type="password" name="password" placeholder="Enter Password" maxlength="100" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-600" required>
       </div>
       <div class="mb-4">
-        <button type="submit" 
-                class="block text-center w-full bg-[#004B49] text-white py-2 rounded-lg hover:bg-[#047857]">
+        <button type="submit" class="block text-center w-full bg-[#004B49] text-white py-2 rounded-lg hover:bg-[#047857]">
           LOGIN
         </button>
       </div>

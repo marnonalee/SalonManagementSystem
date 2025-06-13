@@ -1,6 +1,12 @@
-<?php 
+<?php
 include 'db.php';
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+require 'phpmailer/Exception.php';
+require 'phpmailer/PHPMailer.php';
+require 'phpmailer/SMTP.php';
 
+session_start();
 $error = '';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -22,27 +28,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $length    = strlen($password) >= 8;
 
     if (empty($error)) {
-        $check_username = $conn->prepare("SELECT user_id FROM users WHERE LOWER(username) = LOWER(?)");
-        $check_username->bind_param("s", $username);
-        $check_username->execute();
-        $check_username->store_result();
-
-        if ($check_username->num_rows > 0) {
+        $stmt = $conn->prepare("SELECT user_id FROM users WHERE LOWER(username) = LOWER(?)");
+        $stmt->bind_param("s", $username);
+        $stmt->execute();
+        $stmt->store_result();
+        if ($stmt->num_rows > 0) {
             $error = "Username already exists!";
         }
-        $check_username->close();
+        $stmt->close();
     }
 
     if (empty($error)) {
-        $check_email = $conn->prepare("SELECT user_id FROM users WHERE LOWER(email) = LOWER(?)");
-        $check_email->bind_param("s", $email);
-        $check_email->execute();
-        $check_email->store_result();
-
-        if ($check_email->num_rows > 0) {
+        $stmt = $conn->prepare("SELECT user_id FROM users WHERE LOWER(email) = LOWER(?)");
+        $stmt->bind_param("s", $email);
+        $stmt->execute();
+        $stmt->store_result();
+        if ($stmt->num_rows > 0) {
             $error = "Email already exists!";
         }
-        $check_email->close();
+        $stmt->close();
     }
 
     if (empty($error)) {
@@ -51,25 +55,41 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         } elseif ($password !== $confirm) {
             $error = "Passwords do not match!";
         } else {
-            $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+            $otp = rand(100000, 999999);
+            $_SESSION['signup_data'] = [
+                'username' => $username,
+                'email' => $email,
+                'password' => password_hash($password, PASSWORD_DEFAULT),
+                'otp' => $otp
+            ];
 
-            $sql = "INSERT INTO users (username, email, password) VALUES (?, ?, ?)";
-            $stmt = $conn->prepare($sql);
-            $stmt->bind_param("sss", $username, $email, $hashed_password);
+            $mail = new PHPMailer(true);
+            try {
+                $mail->isSMTP();
+                $mail->Host = 'smtp.gmail.com';
+                $mail->SMTPAuth = true;
+                $mail->Username = 'salonaandb@gmail.com';
+                $mail->Password = 'oqnblesgwkekaxcg';
+                $mail->SMTPSecure = 'tls';
+                $mail->Port = 587;
 
-            if ($stmt->execute()) {
-                header("Location: login.php");
+                $mail->setFrom('salonaandb@gmail.com', 'Adore & Beauty');
+                $mail->addAddress($email, $username);
+                $mail->Subject = 'Your OTP Code';
+                $mail->Body    = "Your OTP code is: $otp";
+
+                $mail->send();
+                header("Location: verify_otp.php");
                 exit();
-            } else {
-                $error = "Error: " . $stmt->error;
+            } catch (Exception $e) {
+                $error = "OTP could not be sent. Mailer Error: " . $mail->ErrorInfo;
             }
-
-            $stmt->close();
         }
     }
     $conn->close();
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -81,6 +101,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Lora:wght@700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="style.css" />
+    <style>
+        .error-input {
+            border-color: red !important;
+        }
+    </style>
 </head>
 <body style="background-image: url('images/bg.jpg')">
 <header class="fixed top-0 left-0 w-full bg-white bg-opacity-20 backdrop-blur-md shadow-md z-50 py-3">
@@ -99,11 +124,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       <a href="index.php#contact" class="nav-link flex items-center gap-2 px-3 py-2 rounded-lg font-medium text-tale-500 hover:text-tale-900 hover:bg-gray-100 transition-colors duration-300">
         <i class="fas fa-envelope"></i> Contact Us
       </a>
-      <a href="guide.php"  class="nav-link flex items-center gap-2 px-3 py-2 rounded-lg font-medium text-tale-500 hover:text-tale-900 hover:bg-gray-100 transition-colors duration-300">
+      <a href="guide.php" class="nav-link flex items-center gap-2 px-3 py-2 rounded-lg font-medium text-tale-500 hover:text-tale-900 hover:bg-gray-100 transition-colors duration-300">
         <i class="fas fa-book"></i> Beauty & Style Guide
       </a>
     </nav>
-
 
     <div class="flex space-x-4">
       <a href="login.php" class="px-5 py-2 rounded-full border-2 border-gray-900 text-gray-900 font-semibold bg-transparent hover:bg-gray-900 hover:text-white transition duration-300 transform hover:scale-105">
@@ -133,7 +157,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         <form action="sign-in.php" method="POST" novalidate>
             <div class="mb-4">
-                Username <span id="username-count" class="text-sm text-gray-300 float-right">0/50</span>
+                Username 
                 <input
                     type="text"
                     name="username"
@@ -148,7 +172,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
 
             <div class="mb-4">
-                Email <span id="email-count" class="text-sm text-gray-300 float-right">0/50</span>
+                Email 
                 <input
                     type="email"
                     name="email"
@@ -162,20 +186,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
 
             <div class="mb-4">
-            Password <span id="password-count" class="text-sm text-gray-300 float-right">0/100</span>
-            <input
-                type="password"
-                name="password"
-                id="password"
-                placeholder="Password"
-                class="w-full px-4 py-2 border rounded-lg"
-                required
-                maxlength="100"
-                pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_]).{8,}"
-                title="Must be at least 8 characters long, include uppercase, lowercase, number, and special character."
-                autocomplete="new-password"
-            />
-
+                Password 
+                <input
+                    type="password"
+                    name="password"
+                    id="password"
+                    placeholder="Password"
+                    class="w-full px-4 py-2 border rounded-lg"
+                    required
+                    maxlength="100"
+                    pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_]).{8,}"
+                    title="Must be at least 8 characters long, include uppercase, lowercase, number, and special character."
+                    autocomplete="new-password"
+                />
                 <div id="password-rules" class="text-sm text-gray-600 mt-2">
                     <p>Password must have:</p>
                     <ul class="list-disc ml-5">
@@ -187,11 +210,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     </ul>
                 </div>
             </div>
+
             <div class="mb-6">
                 Confirm Password
                 <input
                     type="password"
                     name="confirm_password"
+                    id="confirm_password"
                     placeholder="Confirm Password"
                     class="w-full px-4 py-2 border rounded-lg"
                     required
@@ -214,7 +239,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     function validate() {
         const val = passwordInput.value;
-
         passwordRules.style.display = val.length > 0 ? 'block' : 'none';
 
         document.getElementById('rule-length').style.color = val.length >= 8 ? 'green' : 'red';
@@ -229,7 +253,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     const usernameInput = document.getElementById('username');
     const usernameCount = document.getElementById('username-count');
-
     usernameInput.addEventListener('input', () => {
         const len = usernameInput.value.length;
         usernameCount.textContent = `${len}/50`;
@@ -237,18 +260,47 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     const emailInput = document.getElementById('email');
     const emailCount = document.getElementById('email-count');
-
     emailInput.addEventListener('input', () => {
         const len = emailInput.value.length;
         emailCount.textContent = `${len}/50`;
     });
 
     const passwordCount = document.getElementById('password-count');
-
     passwordInput.addEventListener('input', () => {
         const len = passwordInput.value.length;
         passwordCount.textContent = `${len}/100`;
     });
+
+    document.querySelector('form').addEventListener('submit', function (e) {
+        let isValid = true;
+        let emptyFields = false;
+        const fields = ['username', 'email', 'password', 'confirm_password'];
+
+        fields.forEach(id => {
+            const input = document.getElementById(id);
+            if (!input.value.trim()) {
+                input.classList.add('error-input');
+                emptyFields = true;
+                isValid = false;
+            } else {
+                input.classList.remove('error-input');
+            }
+        });
+
+        const oldMsg = document.getElementById('empty-fields-msg');
+        if (oldMsg) oldMsg.remove();
+
+        if (emptyFields) {
+            e.preventDefault(); 
+            const form = document.querySelector('form');
+            const errorDiv = document.createElement('div');
+            errorDiv.id = 'empty-fields-msg';
+            errorDiv.className = 'mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded';
+            errorDiv.innerText = 'Please fill in all fields.';
+            form.parentNode.insertBefore(errorDiv, form); 
+        }
+    });
 </script>
+
 </body>
 </html>

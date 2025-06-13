@@ -16,7 +16,7 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-$limit = 5;
+$limit = 10;
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $page = max($page, 1);
 $offset = ($page - 1) * $limit;
@@ -51,16 +51,11 @@ if ($success_message) {
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Admin Dashboard</title>
+    <title>Services - Admin</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="styles.css" />
-    <style>
-      body {
-        font-family: 'Inter', sans-serif;
-      }
-    </style>
 </head>
 <body class="bg-white text-gray-900">
   <div class="flex min-h-screen">
@@ -104,14 +99,14 @@ if ($success_message) {
           <div class="overflow-x-auto mt-2">
               
               <table class="min-w-full bg-white rounded-md shadow-md">
-                  <thead class="bg-gray-200 text-gray-700 text-sm">
+                <thead class="bg-gray-200 text-gray-700 text-sm">
                       <tr>
-                          <th class="text-left px-6 py-3">Service Name</th>
-                          <th class="text-left px-6 py-3">Price</th>
-                          <th class="text-left px-6 py-3">Time</th>
-                          <th class="text-left px-6 py-3">Specialization</th>
-                          <th class="text-left px-6 py-3">Appointment Fee</th>
-                          <th class="text-left px-6 py-3">Actions</th>
+                          <th class="text-left px-4 py-2">Service Name</th>
+                          <th class="text-left px-4 py-2">Price</th>
+                          <th class="text-left px-4 py-2">Duration </th>
+                          <th class="text-left px-4 py-2">Specialization</th>
+                          <th class="text-left px-4 py-2">Appointment Fee</th>
+                          <th class="text-left px-4 py-2"></th>
                       </tr>
                   </thead>
                 <tbody class="text-sm text-gray-800 divide-y divide-gray-100">
@@ -125,8 +120,8 @@ if ($success_message) {
                     ?>
                     <tr>
                       
-                        <td class="px-6 py-4"><?php echo htmlspecialchars($row['service_name']); ?></td>
-                        <td class="px-6 py-4">
+                        <td class="px-4 py-2"><?php echo htmlspecialchars($row['service_name']); ?></td>
+                        <td class="px-4 py-3">
                           ₱<?php echo number_format($row['price'], 2); ?>
                           <?php 
                             if ($row['price_max'] > $row['price']) {
@@ -134,7 +129,7 @@ if ($success_message) {
                             }
                           ?>
                         </td>
-                        <td class="px-6 py-4">
+                        <td class="px-4 py-3">
                             <?php
                             $duration_minutes = isset($row['duration']) ? $row['duration'] : 0;
                             if ($duration_minutes > 0) {
@@ -158,32 +153,38 @@ if ($success_message) {
                             }
                             ?>
                         </td>
-                        <td class="px-6 py-4">
+                        <td class="px-4 py-3">
                             <?php
                             $specialization = isset($row['specialization_required']) && !empty($row['specialization_required']) ? htmlspecialchars($row['specialization_required']) : 'No specialization required';
                             echo $specialization;
                             ?>
                         </td>
-                        <td class="px-6 py-4">₱<?php echo number_format($row['appointment_fee'], 2); ?></td>
-                        <td class="px-6 py-4">
-                          <div class="flex items-center space-x-4">
-                              <button type="button" 
-                                      class="text-blue-500 hover:text-blue-700 text-lg" 
-                                      onclick="openEditModal(<?php echo $row['service_id']; ?>)" 
-                                      title="Edit Service">
-                                  <i class="fas fa-pencil-alt"></i> 
+                        <td class="px-4 py-3">₱<?php echo number_format($row['appointment_fee'], 2); ?></td>
+                        <td class="px-4 py-3text-left">
+                          <div class="relative inline-block text-left">
+                            <button onclick="toggleDropdown(this)" 
+                              class="bg-gray-100 text-gray-700 px-4 py-2  rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                              Actions <i class="fas fa-chevron-down ml-1"></i>
+                            </button>
+
+                            <div class="dropdown-menu absolute right-0 mt-2 w-40 bg-white border rounded shadow-lg hidden z-50">
+                              <button type="button"
+                                onclick="openEditModal(<?php echo $row['service_id']; ?>)"
+                                class="w-full text-left px-4 py-2 text-sm text-blue-600 hover:bg-gray-100">
+                                <i class="fas fa-pencil-alt mr-2"></i>Edit
                               </button>
                               <form method="POST" action="php/archive_service.php" class="archive-form">
-                                  <input type="hidden" name="service_id" value="<?php echo $row['service_id']; ?>">
-                                  <button type="button" 
-                                      class="text-red-500 hover:text-red-700 text-lg archive-button" 
-                                      data-service-id="<?php echo $row['service_id']; ?>"
-                                      title="Archive Service">
-                                      <i class="fas fa-archive"></i>
-                                  </button>
+                                <input type="hidden" name="service_id" value="<?php echo $row['service_id']; ?>">
+                                <button type="button" 
+                                  class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 archive-button"
+                                  data-service-id="<?php echo $row['service_id']; ?>">
+                                  <i class="fas fa-archive mr-2"></i>Archive
+                                </button>
                               </form>
+                            </div>
                           </div>
                         </td>
+
                     </tr>
                     <?php endwhile; else: ?>
                       <tr><td colspan="5" class="text-center py-4 text-gray-500">No services found.</td></tr>
@@ -441,7 +442,23 @@ if ($success_message) {
     });
   });
 
-  
+  function toggleDropdown(button) {
+    const dropdown = button.nextElementSibling;
+    dropdown.classList.toggle('hidden');
+
+    document.querySelectorAll('.dropdown-menu').forEach(menu => {
+      if (menu !== dropdown) {
+        menu.classList.add('hidden');
+      }
+    });
+
+    document.addEventListener('click', function close(e) {
+      if (!button.parentElement.contains(e.target)) {
+        dropdown.classList.add('hidden');
+        document.removeEventListener('click', close);
+      }
+    });
+  }
 </script>
 
 </body>

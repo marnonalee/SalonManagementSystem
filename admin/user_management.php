@@ -4,15 +4,12 @@ if (!isset($_SESSION['admin'])) {
     header("Location: ../login.php");
     exit();
 }
+require_once '../db.php'; 
 
-// Include database connection
-require_once '../db.php'; // Adjust path as needed
-
-$limit = 10; // Records per page
+$limit = 10; 
 $page = isset($_GET['page']) && is_numeric($_GET['page']) ? (int) $_GET['page'] : 1;
 $offset = ($page - 1) * $limit;
 
-// Get total users for pagination
 $totalSql = "SELECT COUNT(*) AS total FROM users";
 $totalResult = mysqli_query($conn, $totalSql);
 $totalRow = mysqli_fetch_assoc($totalResult);
@@ -37,8 +34,6 @@ $result = mysqli_query($conn, $sql);
 if (!$result) {
     die("Database query failed: " . mysqli_error($conn));
 }
-
-// Admin username
 $admin_username = $_SESSION['admin_username'] ?? 'Admin';
 ?>
 
@@ -47,14 +42,11 @@ $admin_username = $_SESSION['admin_username'] ?? 'Admin';
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Admin Dashboard</title>
+  <title>User Management - Admin</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
-  <style>
-    body { font-family: 'Inter', sans-serif; }
-  </style>
 </head>
 <body class="bg-white text-gray-900">
 <div class="flex min-h-screen">
@@ -84,9 +76,6 @@ $admin_username = $_SESSION['admin_username'] ?? 'Admin';
     <a class="sidebar-link" href="../logout.php"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
   </div>
 </aside>
-
-
-  <!-- Main Content -->
   <main class="flex-1 p-8 ml-64 mt-16">
     <header class="fixed top-0 left-64 right-0 bg-white px-8 py-4 shadow z-10 flex justify-between items-center border-b border-gray-200">
       <h1 class="text-sm font-semibold text-gray-900"><i class="fas fa-users-cog mr-2 text-gray-700 text-[14px]"></i> User List</h1>
@@ -124,15 +113,15 @@ $admin_username = $_SESSION['admin_username'] ?? 'Admin';
                   </span>
                 </td>
                 <td class="px-4 py-3 text-center"><?php echo htmlspecialchars($row['total_appointments']); ?></td>
-                <td class="py-2 px-4 border-b text-center relative">
-                  <div class="relative inline-block text-left">
+                <td class="px-4 py-3 border-b text-center relative">
+                  <d iv class="relative inline-block text-left">
                     <button onclick="toggleDropdown(this)" 
                       class="bg-gray-100 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
                       Actions <i class="fas fa-chevron-down ml-1"></i>
                     </button>
                     
                     <div class="dropdown-menu absolute right-0 mt-2 w-40 bg-white border rounded shadow-lg hidden z-50">
-                      <!-- Edit Button -->
+                   
                       <button 
                         onclick="openEditModal(
                           <?php echo $row['user_id']; ?>, 

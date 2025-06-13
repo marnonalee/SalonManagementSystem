@@ -13,14 +13,19 @@ $result = mysqli_query($conn, $query);
 $terms = mysqli_fetch_assoc($result);
 
 if (isset($_POST['save_terms'])) {
-    $updated_content = mysqli_real_escape_string($conn, $_POST['terms_content']);
-    $update_query = "UPDATE terms_conditions SET content = '$updated_content' WHERE id = {$terms['id']}";
-    if (mysqli_query($conn, $update_query)) {
-        $success_message = "Terms and Conditions updated successfully.";
-        $result = mysqli_query($conn, $query);
-        $terms = mysqli_fetch_assoc($result);
-    } else {
-        $error_message = "Failed to update terms. Please try again.";
+    $updated_content = $_POST['terms_content'];
+
+    if ($updated_content !== $terms['content']) {
+        $updated_content_escaped = mysqli_real_escape_string($conn, $updated_content);
+        $update_query = "UPDATE terms_conditions SET content = '$updated_content_escaped' WHERE id = {$terms['id']}";
+        
+        if (mysqli_query($conn, $update_query)) {
+            $success_message = "Terms and Conditions updated successfully.";
+            $result = mysqli_query($conn, $query);
+            $terms = mysqli_fetch_assoc($result);
+        } else {
+            $error_message = "Failed to update terms. Please try again.";
+        }
     }
 }
 ?>
@@ -30,14 +35,11 @@ if (isset($_POST['save_terms'])) {
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Admin Dashboard</title>
+  <title>Terms & Condition - Admin</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
-  <style>
-    body { font-family: 'Inter', sans-serif; }
-  </style>
 </head>
 <body class="bg-white text-gray-900">
 <div class="flex min-h-screen">
@@ -89,7 +91,6 @@ if (isset($_POST['save_terms'])) {
     </div>
   </main>
 </div>
-
 
 </body>
 </html>

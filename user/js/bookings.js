@@ -1,3 +1,4 @@
+
 let selectedAgent = ""; 
 const cards = document.querySelectorAll('.service-card');
 const servicesContainer = document.getElementById('servicesContainer');
@@ -55,8 +56,8 @@ document.querySelector('form').addEventListener('submit', function(event) {
 });
 
 function validateForm() {
-    const serviceSelect = document.getElementById('serviceOption');
-    const service = serviceSelect.value;
+    const serviceInput = document.getElementById("serviceOption");
+    const service = serviceInput.value;
     const date = document.getElementById('datePicker').value;
     const time = document.getElementById('timePicker').value;
 
@@ -65,20 +66,22 @@ function validateForm() {
         return;
     }
 
-    const selectedOption = serviceSelect.options[serviceSelect.selectedIndex];
-    const price = selectedOption.getAttribute('data-price');
-    const fee = selectedOption.getAttribute('data-fee');
+    const selectedServiceData = serviceData[service];
+    if (!selectedServiceData) {
+        alert('Invalid service selected.');
+        return;
+    }
 
-    // Populate summary modal
     document.getElementById('summaryService').textContent = service;
     document.getElementById('summaryDate').textContent = date;
     document.getElementById('summaryTime').textContent = time;
     document.getElementById('summaryAgent').textContent = selectedAgent;
-    document.getElementById('summaryPrice').textContent = parseFloat(price).toFixed(2);
-    document.getElementById('summaryFee').textContent = parseFloat(fee).toFixed(2);
+    document.getElementById('summaryPrice').textContent = parseFloat(selectedServiceData.price).toFixed(2);
+    document.getElementById('summaryFee').textContent = parseFloat(selectedServiceData.fee).toFixed(2);
     document.getElementById('bookingModal').classList.add('hidden');
     document.getElementById('summaryModal').classList.remove('hidden');
 }
+
 function showAgents() {
     document.getElementById('agentSelection').classList.remove('hidden');
     document.getElementById('continueButton').classList.add('hidden');
@@ -99,14 +102,16 @@ function selectAgent(element) {
         return;
     }
 
-    const serviceSelect = document.getElementById("serviceOption");
-    const selectedOption = serviceSelect.options[serviceSelect.selectedIndex];
-    const serviceDuration = selectedOption ? parseInt(selectedOption.getAttribute("data-duration")) : 0;
+    const serviceInput = document.getElementById("serviceOption");
+const selectedServiceName = serviceInput.value;
+const selectedServiceData = serviceData[selectedServiceName];
+const serviceDuration = selectedServiceData ? selectedServiceData.duration : 0;
 
-    if (serviceDuration === 0) {
-        alert("Please select a service first!");
-        return;
-    }
+if (serviceDuration === 0) {
+    alert("Please select a valid service!");
+    return;
+}
+
 
     document.getElementById('timePickerWrapper').classList.remove('hidden');
 
@@ -142,7 +147,7 @@ function populateTimes(times) {
     }
 }
 
-    
+
 function proceedBooking() {
     const serviceSelect = document.getElementById('serviceOption');
     const selectedOption = serviceSelect.value;
@@ -502,6 +507,5 @@ fetch('php/save_payment_proof.php', {
     alert('An error occurred while uploading proof: ' + err.message);
 });
 }
-
 
 

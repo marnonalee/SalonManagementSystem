@@ -15,44 +15,34 @@ $phone = $_SESSION['phone'];
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Stylicle - Profile</title>
+    <title>Adore & Beauty - Profile</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"/>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Lora:wght@700&display=swap"/>
-    <link rel="stylesheet" href="css/user_profile.css"/>
+    <link rel="stylesheet" href="css/user_profiles.css"/>
+    <script src="js/profile.js" defer></script>
 </head>
 <body class="bg-neutral-100">
 
 <aside class="bg-[#1d3239] w-64 min-h-screen shadow-lg fixed top-0 left-0 px-6 py-10 space-y-6 hidden md:block z-50 text-[#f3f4f6]">
     <div class="absolute top-0 right-0 h-full w-8 bg-[#ffb199] rounded-l-full z-0"></div>
     <div class="relative z-10">
-        <div class="text-center mb-10">
-            <img src="../images/logo1.png" alt="Stylicle Logo" class="w-32 mx-auto" />
-        </div>
-        <nav class="flex flex-col space-y-4">
-            <a href="landing.php" class="hover:text-[#fe7762] flex items-center transition">
-                <i class="fas fa-home mr-3"></i>Home
-            </a>
-            <a href="services.php" class="hover:text-[#fe7762] flex items-center transition">
-                <i class="fas fa-cut mr-3"></i>Services
-            </a>
-            <a href="your_bookings.php" class="hover:text-[#fe7762] flex items-center transition">
-                <i class="fas fa-calendar-alt mr-3"></i>My Bookings
-            </a>
-            <a href="guide.php" class="hover:text-[#fe7762] flex items-center transition">
-                <i class="fas fa-book mr-3"></i>Beauty Guide
-            </a>
-            <div class="border-t border-[#334155] pt-4 mt-4">
-                <a href="profile.php" class="bg-[#fe7762] text-white flex font-semibold items-center rounded-md px-2 py-1 shadow hover:bg-[#e45a4f] transition">
-                    <i class="fas fa-user mr-3"></i>Profile
-                </a>
-                <a href="logout.php" class="hover:text-[#fe7762] flex items-center transition">
-                    <i class="fas fa-sign-out-alt mr-3"></i>Logout
-                </a>
-            </div>
-        </nav>
+      <div class="flex items-center space-x-2">
+        <img src="../images/logo1.png" alt="Adore & Beauty Logo" class="w-8" />
+        <p class="text-white text-sm">Welcome, <span class="font-semibold"><?php echo htmlspecialchars($username); ?></span>!</p>
+      </div>
     </div>
-</aside>
+    <nav class="flex flex-col space-y-4">
+      <a href="services.php" class="hover:text-[#fe7762] flex items-center transition" ><i class="fas fa-cut mr-3"></i>Services</a>
+      <a href="your_bookings.php" class="hover:text-[#fe7762] flex items-center transition"><i class="fas fa-calendar-alt mr-3"></i>My Bookings</a>
+      <a href="messages_page.php" class="hover:text-[#fe7762] flex items-center transition"><i class="fas fa-user mr-3"></i>Messages</a>
+      <div class="border-t border-[#334155] pt-4 mt-4">
+        <a href="profile.php" class="bg-[#fe7762] text-white flex font-semibold items-center rounded-md px-2 py-1 shadow hover:bg-[#e45a4f] transition"><i class="fas fa-user mr-3"></i>Profile</a>
+        <a href="logout.php" class="hover:text-[#fe7762] flex items-center transition"><i class="fas fa-sign-out-alt mr-3"></i>Logout</a>
+      </div>
+    </nav>
+  </aside>
+
 <main class="mt-24 mb-10 md:ml-80 px-4">
   <div class="max-w-4xl mx-auto bg-white/70 backdrop-blur-md rounded-3xl shadow-xl p-8">
     <h2 class="text-4xl font-bold text-gray-600 mb-8 text-center font-[Poppins]">User Settings</h2>
@@ -95,21 +85,19 @@ $phone = $_SESSION['phone'];
             </div>
 
             <div>
-  <label for="phone" class="block text-gray-700 font-semibold mb-2">Phone Number</label>
-  <input 
-    id="phone" 
-    name="phone" 
-    type="tel" 
-    value="<?= htmlspecialchars($phone); ?>" 
-    required 
-    maxlength="11"
-    pattern="[0-9]{1,11}" 
-    inputmode="numeric" 
-    oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-    class="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-200">
-</div>
-
-
+              <label for="phone" class="block text-gray-700 font-semibold mb-2">Phone Number</label>
+              <input 
+                id="phone" 
+                name="phone" 
+                type="tel" 
+                value="<?= htmlspecialchars($phone); ?>" 
+                required 
+                maxlength="11"
+                pattern="[0-9]{1,11}" 
+                inputmode="numeric" 
+                oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                class="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-200">
+            </div>
           <div>
             <label for="email" class="block text-gray-700 font-semibold mb-2">Email</label>
             <input id="email" type="email" value="<?= htmlspecialchars($email); ?>" disabled
@@ -159,122 +147,6 @@ $phone = $_SESSION['phone'];
     </div>
   </div>
 </main>
-
-<script>
-   document.addEventListener('DOMContentLoaded', () => {
-  const profileBtn = document.getElementById('profile-button');
-  const passwordBtn = document.getElementById('password-button');
-  const profileForm = document.getElementById('profile-form');
-  const passwordForm = document.getElementById('password-form');
-
-  profileForm.classList.remove('hidden');
-  passwordForm.classList.add('hidden');
-  profileBtn.classList.add('active-btn');
-
-  profileBtn.addEventListener('click', () => {
-    profileForm.classList.remove('hidden');
-    passwordForm.classList.add('hidden');
-    profileBtn.classList.add('active-btn');
-    passwordBtn.classList.remove('active-btn');
-  });
-
-  passwordBtn.addEventListener('click', () => {
-    passwordForm.classList.remove('hidden');
-    profileForm.classList.add('hidden');
-    passwordBtn.classList.add('active-btn');
-    profileBtn.classList.remove('active-btn');
-  });
-});
-
-
-    document.querySelectorAll('.success-msg').forEach(msg => {
-        setTimeout(() => msg.style.display = 'none', 10000);
-    });
-
-  
-function showRules() {
-  const rules = document.getElementById('password-rules');
-  if (rules.classList.contains('hidden')) {
-    rules.classList.remove('hidden');
-  }
-}
-
-function checkPasswordStrength() {
-  const password = document.getElementById('new-password').value;
-
-  const lengthRule = document.getElementById('length-rule');
-  const upperRule = document.getElementById('uppercase-rule');
-  const lowerRule = document.getElementById('lowercase-rule');
-  const numberRule = document.getElementById('number-rule');
-  const specialRule = document.getElementById('special-rule');
-
-  updateRule(lengthRule, password.length >= 8);
-  updateRule(upperRule, /[A-Z]/.test(password));
-  updateRule(lowerRule, /[a-z]/.test(password));
-  updateRule(numberRule, /\d/.test(password));
-  updateRule(specialRule, /[\W_]/.test(password));
-}
-
-function updateRule(element, isValid) {
-  element.classList.remove('text-gray-600', 'text-green-600', 'text-red-500');
-  const icon = element.querySelector('i');
-  icon.classList.remove('fa-circle', 'fa-check', 'fa-times');
-
-  if (isValid) {
-    element.classList.add('text-green-600');
-    icon.classList.add('fa-check');
-  } else {
-    element.classList.add('text-red-500');
-    icon.classList.add('fa-times');
-  }
-}
-
-function validatePasswordForm() {
-  const password = document.getElementById('new-password').value;
-  const confirmPassword = document.getElementById('confirm-password').value;
-
-  const isValid = (
-    password.length >= 8 &&
-    /[A-Z]/.test(password) &&
-    /[a-z]/.test(password) &&
-    /\d/.test(password) &&
-    /[\W_]/.test(password)
-  );
-
-  if (!isValid) {
-    alert("Please follow all password rules.");
-    return false;
-  }
-
-  if (password !== confirmPassword) {
-    alert("Passwords do not match.");
-    return false;
-  }
-
-  return true;
-}
-</script>
-
-
-<style>
-  .tab-btn {
-    background-color: white;
-    color: #334155;
-  }
-
-  .tab-btn:hover {
-    background-color: #f1f5f9; 
-  }
-
-  .tab-btn.active-btn {
-    background-color: #fe7762;
-    color: white;
-  }
-
-  .tab-btn.active-btn:hover {
-    background-color: #e45a4f;
-  }
-</style>
-
+<script src="js/profile.js" defer></script>
 </body>
 </html>

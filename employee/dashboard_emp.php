@@ -13,6 +13,28 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
+// Fetch appointment details for the employee
+$stmt = $conn->prepare("
+    SELECT 
+        a.appointment_id,
+        u.username AS client_name,
+        s.service_name AS service_name,
+        a.appointment_date,
+        a.start_time,
+        a.end_time,
+        a.appointment_status
+    FROM appointments a
+    JOIN users u ON a.user_id = u.user_id
+    JOIN services s ON a.service_id = s.service_id
+    WHERE a.employee_id = ?
+    AND a.is_deleted = 0
+    ORDER BY a.appointment_date DESC, a.start_time DESC
+");
+$stmt->bind_param("i", $employee_id);
+$stmt->execute();
+$appointmentsResult = $stmt->get_result();
+
+
 $stmt = $conn->prepare("SELECT employee_id FROM employees WHERE name = ?");
 $stmt->bind_param("s", $employee_name);
 $stmt->execute();
@@ -141,16 +163,16 @@ $conn->close();
       </div>
 
       <div class="bg-slate-50 rounded-lg p-5 flex justify-between items-center">
-  <div>
-    <p class="text-xs text-gray-900 font-semibold mb-1">This Week's Appointments</p>
-    <p class="text-lg font-bold text-gray-900">
-      <?php echo $weekly_count; ?> 
-    </p>
-  </div>
-  <button class="border border-pink-300 rounded-md p-2 text-pink-600 hover:bg-pink-200">
-    <i class="fas fa-calendar-week text-[18px]"></i>
-  </button>
-</div>
+        <div>
+          <p class="text-xs text-gray-900 font-semibold mb-1">This Week's Appointments</p>
+          <p class="text-lg font-bold text-gray-900">
+            <?php echo $weekly_count; ?> 
+          </p>
+        </div>
+        <button class="border border-pink-300 rounded-md p-2 text-pink-600 hover:bg-pink-200">
+          <i class="fas fa-calendar-week text-[18px]"></i>
+        </button>
+      </div>
 
 
         <div class="bg-indigo-50 rounded-lg p-5 flex justify-between items-center">
@@ -173,52 +195,34 @@ $conn->close();
   </button>
 </div>
       </div>
-      <div class="overflow-x-auto rounded-lg border border-gray-100">
-        <table class="w-full text-xs text-left text-gray-600">
-          <thead class="bg-gray-50 text-gray-600 font-semibold">
-            <tr>
-              <th class="px-4 py-3">ID</th>
-              <th class="px-4 py-3">Client</th>
-              <th class="px-4 py-3">Service</th>
-              <th class="px-4 py-3">Date</th>
-              <th class="px-4 py-3">Time</th>
-              <th class="px-4 py-3">Status</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-gray-100">
-            <tr>
-              <td class="px-4 py-3">1</td>
-              <td class="px-4 py-3">Charlotte</td>
-              <td class="px-4 py-3">Hair Cut</td>
-              <td class="px-4 py-3">May 10, 2025</td>
-              <td class="px-4 py-3">1:00-2:00 PM</td>
-              <td class="px-4 py-3">
-                <span class="inline-block px-2 py-0.5 text-[10px] font-semibold rounded-full bg-yellow-100 text-yellow-600">Pending</span>
-              </td>
-            </tr>
-            <tr>
-              <td class="px-4 py-3">2</td>
-              <td class="px-4 py-3">Ina Lopez</td>
-              <td class="px-4 py-3">Hair Color</td>
-              <td class="px-4 py-3">May 12, 2025</td>
-              <td class="px-4 py-3">10:00-11:00 AM</td>
-              <td class="px-4 py-3">
-                <span class="inline-block px-2 py-0.5 text-[10px] font-semibold rounded-full bg-green-100 text-green-600">Accepted</span>
-              </td>
-            </tr>
-            <tr>
-              <td class="px-4 py-3">3</td>
-              <td class="px-4 py-3">Marco Diaz</td>
-              <td class="px-4 py-3">Makeup</td>
-              <td class="px-4 py-3">May 15, 2025</td>
-              <td class="px-4 py-3">3:00-4:00 PM</td>
-              <td class="px-4 py-3">
-                <span class="inline-block px-2 py-0.5 text-[10px] font-semibold rounded-full bg-red-100 text-red-600">Declined</span>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <tbody class="divide-y divide-gray-100">
+  <?php while ($row = $appointmentsResult->fetch_assoc()): ?>
+    <tr>
+      <td class="px-4 py-3"><?= htmlspecialchars($row['appointment_id']) ?></td>
+      <td class="px-4 py-3"><?= htmlspecialchars($row['client_name']) ?></td>
+      <td class="px-4 py-3"><?= htmlspecialchars($row['service_name']) ?></td>
+      <td class="px-4 py-3"><?= date('M d, Y', strtotime($row['appointment_date'])) ?></td>
+      <td class="px-4 py-3">
+        <?= date('g:i A', strtotime($row['start_time'])) ?> - <?= date('g:i A', strtotime($row['end_time'])) ?>
+      </td>
+      <td class="px-4 py-3">
+        <?php
+          $status = $row['appointment_status'];
+          $badgeClass = match ($status) {
+              'Pending' => 'bg-yellow-100 text-yellow-600',
+              'Accepted' => 'bg-green-100 text-green-600',
+              'Declined', 'Cancelled' => 'bg-red-100 text-red-600',
+              default => 'bg-gray-100 text-gray-600'
+          };
+        ?>
+        <span class="inline-block px-2 py-0.5 text-[10px] font-semibold rounded-full <?= $badgeClass ?>">
+          <?= htmlspecialchars($status) ?>
+        </span>
+      </td>
+    </tr>
+  <?php endwhile; ?>
+</tbody>
+
     </section>
   </main>
 </div>

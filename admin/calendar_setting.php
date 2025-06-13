@@ -6,7 +6,6 @@ if (!isset($_SESSION['admin'])) {
 }
 
 $admin_username = isset($_SESSION['admin_username']) ? $_SESSION['admin_username'] : 'Admin';
-
 $conn = new mysqli('localhost:4306', 'root', '', 'salon');
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
@@ -14,24 +13,43 @@ if ($conn->connect_error) {
 
 $show_modal = false;
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $open_days = $_POST['days'] ?? [];
-    $days_of_week = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-
-    foreach ($days_of_week as $day) {
-        $is_open = in_array($day, $open_days) ? 1 : 0;
-        $stmt = $conn->prepare("UPDATE calendar_settings SET is_open = ? WHERE day = ?");
-        $stmt->bind_param("is", $is_open, $day);
-        $stmt->execute();
-    }
-
-    $show_modal = true; 
-}
-
 $result = $conn->query("SELECT * FROM calendar_settings");
 $settings = [];
 while ($row = $result->fetch_assoc()) {
     $settings[$row['day']] = $row['is_open'];
+}
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $open_days = $_POST['days'] ?? [];
+    $days_of_week = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+    $changed = false;
+    foreach ($days_of_week as $day) {
+        $is_open_post = in_array($day, $open_days) ? 1 : 0;
+        $is_open_db = isset($settings[$day]) ? (int)$settings[$day] : 0;
+        if ($is_open_post !== $is_open_db) {
+            $changed = true;
+            break;
+        }
+    }
+
+    if ($changed) {
+        foreach ($days_of_week as $day) {
+            $is_open = in_array($day, $open_days) ? 1 : 0;
+            $stmt = $conn->prepare("UPDATE calendar_settings SET is_open = ? WHERE day = ?");
+            $stmt->bind_param("is", $is_open, $day);
+            $stmt->execute();
+        }
+        $show_modal = true;
+
+        $result = $conn->query("SELECT * FROM calendar_settings");
+        $settings = [];
+        while ($row = $result->fetch_assoc()) {
+            $settings[$row['day']] = $row['is_open'];
+        }
+    } else {
+        $show_modal = false;
+    }
 }
 ?>
 
@@ -40,15 +58,12 @@ while ($row = $result->fetch_assoc()) {
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Admin Dashboard</title>
+  <title>Calendar Setting - Admin</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <style>
-    body { font-family: 'Inter', sans-serif; }
-  </style>
 </head>
 <body class="bg-gray-100">
 

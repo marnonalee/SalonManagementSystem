@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         die("Error: Max price cannot be less than Min price.");
     }
 
-    $appointment_fee = $price * 0.10;
+    $appointment_fee = 50;
 
     $duration_hours = isset($_POST['duration_hours']) ? intval($_POST['duration_hours']) : 0;
     $duration_minutes = isset($_POST['duration_minutes']) ? intval($_POST['duration_minutes']) : 0;

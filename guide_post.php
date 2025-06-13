@@ -65,13 +65,6 @@ if (isset($_GET['id'])) {
     </div>
   </div>
 </header>
-  <!-- Back Button 
-  <div class="mt-32">
-    <a href="guide.php" class="inline-flex items-center text-slate-600 hover:text-purple-700 text-sm font-semibold transition">
-      <i class="fas fa-arrow-left mr-2"></i> Back to Beauty & Style Guide
-    </a>
-  </div>
--->
  
   <main class="flex-grow flex justify-center items-start px-4 mt-20">
     <div class="glass-card max-w-3xl w-full p-8 shadow-xl rounded-xl mt-4 mb-16">

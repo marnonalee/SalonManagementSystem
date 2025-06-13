@@ -6,7 +6,7 @@ body {
     font-family: 'Poppins', sans-serif;
   }
 .active-btn {
-  background-color: #A5F3FC;
+  background-color:rgb(13, 27, 7);
   color: white;
   font-weight: 600;
 }
@@ -21,4 +21,21 @@ body {
     width: 100%;
     max-width: 480px;
     margin: 5rem auto 0;
+}
+.tab-btn {
+  background-color: white;
+  color:rgb(25, 30, 37);
+}
+
+.tab-btn:hover {
+  background-color: #f1f5f9; 
+}
+
+.tab-btn.active-btn {
+  background-color: #fe7762;
+  color: white;
+}
+
+.tab-btn.active-btn:hover {
+  background-color: #e45a4f;
 }

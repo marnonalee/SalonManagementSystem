@@ -1,31 +1,24 @@
-.sidebar-link {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    color: #9ca3af; /* Tailwind: text-gray-400 */
-    font-weight: 400;
-    font-size: 1rem;
-    transition: all 0.2s ease-in-out;
-    text-decoration: none;
-    margin-top: 0.75rem; /* Added spacing between links */
+
+body {
+    font-family: 'Inter', sans-serif;
+}
+.payment-proof-img {
+    max-width: 100px;
+    max-height: 60px;
   }
-  
-  .sidebar-link:hover {
-    color: #374151; /* Tailwind: text-gray-700 */
+ 
+  .rule {
+      display: flex;
+      align-items: center;
+      gap: 6px;
   }
-  
-  .sidebar-link i {
-    width: 1.5rem;
-    font-size: 1rem;
-    text-align: center;
+  .rule .icon {
+      width: 16px;
+      height: 16px;
   }
-  
-  .sidebar-link.active {
-    color: #ec4899; /* Tailwind: text-pink-500 */
-    font-weight: 400;
+  .rule.valid .icon {
+      color: green;
   }
-  
-  .sidebar-link.active i {
-    color: #ec4899;
+  .rule.invalid .icon {
+      color: red;
   }
-  

@@ -43,10 +43,12 @@ fetch('php/cancel_unpaid_appointments.php')
     });
     let selectedBookingId = null;
 
-function openPaymentMethodModal(bookingId) {
-  selectedBookingId = bookingId;
-  document.getElementById('paymentMethodModal').classList.remove('hidden');
-}
+    function openPaymentMethodModal(appointmentId, appointmentFee) {
+      window.selectedAppointmentId = appointmentId;
+      window.selectedAppointmentFee = appointmentFee;
+      document.getElementById('paymentMethodModal').classList.remove('hidden');
+    }
+    
 
 function closePaymentModal() {
   document.getElementById('paymentMethodModal').classList.add('hidden');
@@ -56,6 +58,8 @@ function selectPaymentMethod(method) {
   document.getElementById('methodName').innerText = method.method_name;
   document.getElementById('methodDetails').innerText = method.details;
   document.getElementById('qrCodeImg').src = '/salon management/admin/uploads/' + method.qr_code;
+  document.getElementById('methodAppointmentFee').innerText = window.selectedAppointmentFee;
+  document.getElementById('methodContactNumber').innerText = method.contact_number; 
 
   document.getElementById('paymentMethodModal').classList.add('hidden');
   document.getElementById('paymentInfoModal').classList.remove('hidden');
@@ -142,12 +146,7 @@ const paymentInput = document.querySelector('input[name="payment_screenshot"]');
     }
   });
 
-  submitBtn.addEventListener('click', function (e) {
-    if (!paymentInput.value) {
-      e.preventDefault();
-      alert('Please upload a valid image file before submitting.');
-    }
-  });
+  
   document.getElementById('invalidFileModal').addEventListener('click', function(e) {
     if (e.target === this) closeInvalidFileModal();
   });
@@ -162,39 +161,46 @@ const paymentInput = document.querySelector('input[name="payment_screenshot"]');
       }
     }
   });
-
-
-  submitBtn.addEventListener('click', function () {
-  const file = paymentInput.files[0];
-  if (!file || !selectedBookingId) {
-    alert("Missing file or booking information.");
-    return;
-  }
-
-  const methodName = document.getElementById('methodName').innerText;
-
-  const formData = new FormData();
-  formData.append('appointment_id', selectedBookingId);
-  formData.append('payment_method_name', methodName);
-  formData.append('payment_screenshot', file);
-
-  fetch('php/upload_payment_proof.php', {
-    method: 'POST',
-    body: formData
-  })
-  .then(res => res.json())
-  .then(data => {
-    alert(data.message);
-    closePaymentInfoModal();
-    location.reload();  
-  })
-  .catch(err => {
-    console.error('Upload failed:', err);
-    alert('An error occurred while uploading your proof of payment.');
+  submitBtn.addEventListener('click', function (e) {
+    const file = paymentInput.files[0];
+    const bookingId = window.selectedAppointmentId;
+  
+    if (!file) {
+      alert('Please upload a valid image file before submitting.');
+      return;
+    }
+  
+    if (!bookingId) {
+      alert("Missing booking information.");
+      return;
+    }
+  
+    const methodName = document.getElementById('methodName').innerText;
+  
+    const formData = new FormData();
+    formData.append('appointment_id', bookingId);
+    formData.append('payment_method_name', methodName);
+    formData.append('payment_screenshot', file);
+  
+    fetch('php/upload_payment_proof.php', {
+      method: 'POST',
+      body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        closePaymentInfoModal(); 
+        showSuccessModal(data.message); 
+      } else {
+        alert(data.message); 
+      }
+    })
+    .catch(err => {
+      console.error('Upload failed:', err);
+      alert('An error occurred while uploading your proof of payment.');
+    });
+    
   });
-});
+  
 
-document.querySelectorAll('button[disabled]').forEach(btn => {
-    btn.onclick = (e) => e.preventDefault();
-  });
   

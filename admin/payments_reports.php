@@ -250,7 +250,7 @@ $methods_result = $conn->query("SELECT * FROM payment_methods ORDER BY created_a
                         <?php if ($row['is_active'] == 1): ?>
                           <span class="inline-block px-3 py-1 text-xs rounded-full bg-green-200 text-green-800">Active</span>
                         <?php else: ?>
-                          <span class="inline-block px-3 py-1 text-xs rounded-full bg-gray-300 text-gray-700">Inactive</span>
+                          <span class="inline-block px-3 py-1 text-xs rounded-full bg-gray-300 text-gray-700">Disabled</span>
                         <?php endif; ?>
                       </td>
                       <td class="text-center px-4 py-3 border-b">
@@ -268,7 +268,7 @@ $methods_result = $conn->query("SELECT * FROM payment_methods ORDER BY created_a
                               <button type="submit" name="toggle_status"
                                 class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                 <i class="fas <?php echo $row['is_active'] == 1 ? 'fa-toggle-off text-yellow-600' : 'fa-toggle-on text-green-600'; ?> mr-1"></i>
-                                <?php echo $row['is_active'] == 1 ? 'Deactivate' : 'Activate'; ?>
+                                <?php echo $row['is_active'] == 1 ? 'Disable' : 'Enable'; ?>
                               </button>
                             </form>
 
@@ -313,7 +313,7 @@ $methods_result = $conn->query("SELECT * FROM payment_methods ORDER BY created_a
           <input type="text" id="method_name" name="method_name" required class="mt-1 block w-full border border-gray-300 rounded-md p-2" />
         </div>
         <div>
-          <label for="contact_number" class="block font-medium text-gray-700">Contact Number</label>
+          <label for="contact_number" class="block font-medium text-gray-700">Account Number<span class="text-red-600">*</span></label>
           <input type="text" id="contact_number" name="contact_number"
                 class="mt-1 block w-full border border-gray-300 rounded-md p-2"
                 maxlength="11" pattern="\d{11}" inputmode="numeric"
@@ -347,7 +347,7 @@ $methods_result = $conn->query("SELECT * FROM payment_methods ORDER BY created_a
           <input type="text" id="edit_method_name" name="method_name" required class="mt-1 block w-full border border-gray-300 rounded-md p-2" />
         </div>
         <div>
-          <label for="edit_contact_number" class="block font-medium text-gray-700">Contact Number</label>
+          <label for="edit_contact_number" class="block font-medium text-gray-700">Account Number<span class="text-red-600">*</span></label>
           <input type="text" id="edit_contact_number" name="contact_number"
                 class="mt-1 block w-full border border-gray-300 rounded-md p-2"
                 maxlength="11" pattern="\d{11}" inputmode="numeric"

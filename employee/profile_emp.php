@@ -9,7 +9,7 @@ if (!isset($_SESSION['employee'])) {
 
 $employee_name = $_SESSION['employee'];
 
-$stmt = $conn->prepare("SELECT name, email, password, profile_image FROM employees WHERE name = ?");
+$stmt = $conn->prepare("SELECT name, email, password, profile_image, specialization FROM employees WHERE name = ?");
 $stmt->bind_param("s", $employee_name);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -17,8 +17,9 @@ $row = $result->fetch_assoc();
 
 $employee_username = $row['name'];
 $employee_email = $row['email'];
+$employee_specialization = $row['specialization'];
 $employee_password_hash = $row['password'];
-$profile_image = $row['profile_image'] ?? 'default.png';
+$profile_image = $row['profile_image'] ?? 'default.jpg';
 
 $showSuccessModal = false;
 $errorMessage = "";
@@ -27,6 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $new_username = trim($_POST['username']);
     $new_password = $_POST['new_password'];
     $confirm_password = $_POST['confirm_password'];
+    $new_specialization = $employee_specialization; 
 
     $fieldsToUpdate = [];
     $params = [];
@@ -139,9 +141,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php if (!empty($errorMessage)): ?>
           <div class="bg-red-100 text-red-600 px-4 py-2 rounded mb-4"><?= htmlspecialchars($errorMessage) ?></div>
         <?php endif; ?>
-        <?php if ($showSuccessModal): ?>
-          <div class="bg-green-100 text-green-600 px-4 py-2 rounded mb-4">Profile updated successfully!</div>
-        <?php endif; ?>
 
         <form method="POST" enctype="multipart/form-data">
             <div class="flex flex-col items-center mb-4">
@@ -159,6 +158,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           <div class="mb-4">
             <label class="block text-sm font-medium text-gray-700">Email</label>
             <input type="email"   maxlength="100" value="<?= htmlspecialchars($employee_email); ?>" readonly
+              class="w-full px-3 py-2 bg-gray-200 border rounded-md border-gray-300 text-gray-600 cursor-not-allowed" />
+          </div>
+          
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700">Specialization</label>
+            <input type="text" maxlength="100" value="<?= htmlspecialchars($employee_specialization); ?>" readonly
               class="w-full px-3 py-2 bg-gray-200 border rounded-md border-gray-300 text-gray-600 cursor-not-allowed" />
           </div>
 
@@ -205,16 +210,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     });
   </script>
   <?php endif; ?>
-  <div id="successModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-30 <?= $showSuccessModal ? '' : 'hidden' ?>">
-    <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
-      <div class="flex justify-between items-center">
-        <h2 class="text-green-600 text-lg font-semibold">Success</h2>
-        <button onclick="document.getElementById('successModal').classList.add('hidden')" class="text-gray-500 hover:text-gray-700">&times;</button>
-      </div>
-      <p class="mt-4">Profile updated successfully!</p>
-      <button onclick="document.getElementById('successModal').classList.add('hidden')" class="mt-6 bg-slate-500 text-white px-4 py-2 rounded hover:bg-slate-600">Close</button>
-    </div>
-  </div>
+ 
 
 <div id="errorModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-40 hidden">
   <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
@@ -226,6 +222,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <button onclick="document.getElementById('errorModal').classList.add('hidden')" class="mt-6 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Close</button>
   </div>
 </div>
+
+
+<div id="successToast" class="fixed top-5 right-5 bg-green-500 text-white px-4 py-3 rounded-lg shadow-lg z-50 transform transition-all duration-500 ease-in-out <?= $showSuccessModal ? '' : 'translate-x-full opacity-0 pointer-events-none' ?>">
+  <div class="flex items-center space-x-4">
+    <span>✅ Profile updated successfully!</span>
+  </div>
+</div>
+
 
   <script>
 
@@ -310,7 +314,17 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 });
+function hideSuccessToast() {
+    const toast = document.getElementById("successToast");
+    toast.classList.add("translate-x-full", "opacity-0", "pointer-events-none");
+  }
 
+  document.addEventListener("DOMContentLoaded", function () {
+    const toast = document.getElementById("successToast");
+    if (toast && !toast.classList.contains("translate-x-full")) {
+      setTimeout(hideSuccessToast, 3000);
+    }
+  });
   </script>
 </body>
 </html>

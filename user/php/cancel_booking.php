@@ -2,7 +2,7 @@
 include '../db.php';
 session_start();
 
-header('Content-Type: application/json'); // Set JSON header for response
+header('Content-Type: application/json'); 
 
 if (!isset($_POST['appointment_id']) || !isset($_SESSION['user_id'])) {
     echo json_encode(['success' => false, 'message' => 'Invalid request or not logged in.']);
@@ -12,8 +12,6 @@ if (!isset($_POST['appointment_id']) || !isset($_SESSION['user_id'])) {
 $appointment_id = intval($_POST['appointment_id']);
 $user_id = intval($_SESSION['user_id']);
 $cancelReason = "Cancelled by user";
-
-// Check appointment exists and belongs to user
 $sqlCheck = "SELECT appointment_status FROM appointments WHERE appointment_id = ? AND user_id = ?";
 $stmtCheck = $conn->prepare($sqlCheck);
 $stmtCheck->bind_param("ii", $appointment_id, $user_id);

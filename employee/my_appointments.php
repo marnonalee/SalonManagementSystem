@@ -1,6 +1,7 @@
 <?php
 session_start();
-require_once '../db.php'; 
+require_once '../db.php';
+
 if (!isset($_SESSION['employee']) || !isset($_SESSION['employee_id'])) {
     header("Location: ../login.php");
     exit();
@@ -10,36 +11,24 @@ $employee_id = $_SESSION['employee_id'];
 $employee_name = $_SESSION['employee'];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['complete']) && isset($_POST['appointment_id'])) {
-  $appointment_id = intval($_POST['appointment_id']);
+    $appointment_id = intval($_POST['appointment_id']);
 
-  $complete_sql = "UPDATE appointments SET appointment_status = 'Completed' WHERE appointment_id = ? AND employee_id = ?";
-  $complete_stmt = $conn->prepare($complete_sql);
-  $complete_stmt->bind_param("ii", $appointment_id, $employee_id);
-  $complete_stmt->execute();
-  $complete_stmt->close();
+    $complete_sql = "UPDATE appointments SET appointment_status = 'Completed' WHERE appointment_id = ? AND employee_id = ?";
+    $complete_stmt = $conn->prepare($complete_sql);
+    $complete_stmt->bind_param("ii", $appointment_id, $employee_id);
+    $complete_stmt->execute();
+    $complete_stmt->close();
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accept']) && isset($_POST['appointment_id'])) {
-  $appointment_id = intval($_POST['appointment_id']);
+    $appointment_id = intval($_POST['appointment_id']);
 
-  $accept_sql = "UPDATE appointments SET appointment_status = 'Accepted' WHERE appointment_id = ? AND employee_id = ?";
-  $accept_stmt = $conn->prepare($accept_sql);
-  $accept_stmt->bind_param("ii", $appointment_id, $employee_id);
-  $accept_stmt->execute();
-  $accept_stmt->close();
+    $accept_sql = "UPDATE appointments SET appointment_status = 'Upcoming' WHERE appointment_id = ? AND employee_id = ?";
+    $accept_stmt = $conn->prepare($accept_sql);
+    $accept_stmt->bind_param("ii", $appointment_id, $employee_id);
+    $accept_stmt->execute();
+    $accept_stmt->close();
 }
-
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accept']) && isset($_POST['appointment_id'])) {
-  $appointment_id = intval($_POST['appointment_id']);
-
-  $accept_sql = "UPDATE appointments SET appointment_status = 'upcoming' WHERE appointment_id = ? AND employee_id = ?";
-  $accept_stmt = $conn->prepare($accept_sql);
-  $accept_stmt->bind_param("ii", $appointment_id, $employee_id);
-  $accept_stmt->execute();
-  $accept_stmt->close();
-}
-
 
 $sql = "
     SELECT 
@@ -54,7 +43,7 @@ $sql = "
     FROM appointments a
     JOIN users u ON a.user_id = u.user_id
     JOIN services s ON a.service_id = s.service_id
-    LEFT JOIN payments p ON a.appointment_id = p.appointment_id  -- join payments table
+    LEFT JOIN payments p ON a.appointment_id = p.appointment_id
     WHERE a.employee_id = ?
     ORDER BY a.appointment_date, a.start_time
 ";
@@ -63,8 +52,22 @@ $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $employee_id);
 $stmt->execute();
 $result = $stmt->get_result();
-?>
 
+$img_stmt = $conn->prepare("SELECT profile_image FROM employees WHERE employee_id = ?");
+$img_stmt->bind_param("i", $employee_id);
+$img_stmt->execute();
+$img_result = $img_stmt->get_result();
+$empData = $img_result->fetch_assoc();
+
+if (!$empData) {
+    echo "Employee not found.";
+    exit();
+}
+
+$profile_image = $empData['profile_image'];
+
+$conn->close();
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -92,44 +95,19 @@ $result = $stmt->get_result();
     class="w-64 h-screen fixed left-0 top-0 border-r border-gray-200 flex flex-col px-6 py-8 bg-white z-20"
   >
     <div class="flex items-center space-x-3 mb-10">
-      <img
-        src="img1.png"
-        alt="User avatar"
-        class="w-10 h-10 rounded-full object-cover"
-      />
+    <img src="uploads/<?= htmlspecialchars($profile_image); ?>" alt="User avatar" class="w-10 h-10 rounded-full object-cover" />
+       
       <span class="text-slate-500 font-semibold text-lg"
         >Welcome, <?= htmlspecialchars($employee_name); ?></span
       >
     </div>
 
     <nav class="flex flex-col text-base space-y-2">
-      <a
-        class="flex items-center gap-3 text-gray-700 hover:text-slate-500"
-        href="dashboard_emp.php"
-        ><i class="fas fa-th-large"></i><span>Dashboard</span></a
-      >
-      <a
-        class="flex items-center space-x-3 px-3 py-2 rounded-md bg-slate-100 text-slate-600"
-        href="my_appointments.php"
-        ><i class="fas fa-calendar-check"></i><span>My Appointments</span></a
-      >
-     
-      <a
-        class="flex items-center gap-3 text-gray-700 hover:text-slate-500"
-        href="messages.php"
-        ><i class="fas fa-comment-dots"></i><span>Messages</span></a
-      >
-      
-      <a
-        class="flex items-center gap-3 text-gray-700 hover:text-slate-500"
-        href="profile_emp.php"
-        ><i class="fas fa-user"></i><span>My Profile</span></a
-      >
-      <a
-        class="flex items-center gap-3 text-gray-700 hover:text-slate-500"
-        href="../logout.php"
-        ><i class="fas fa-sign-out-alt"></i><span>Logout</span></a
-      >
+      <a class="flex items-center gap-3 text-gray-700 hover:text-slate-500" href="dashboard_emp.php"><i class="fas fa-th-large"></i><span>Dashboard</span></a>
+      <a class="flex items-center space-x-3 px-3 py-2 rounded-md bg-slate-100 text-slate-600" href="my_appointments.php"><i class="fas fa-calendar-check"></i><span>My Appointments</span></a>
+      <a class="flex items-center gap-3 text-gray-700 hover:text-slate-500" href="messages.php"><i class="fas fa-comment-dots"></i><span>Messages</span></a>
+      <a class="flex items-center gap-3 text-gray-700 hover:text-slate-500" href="profile_emp.php"><i class="fas fa-user"></i><span>My Profile</span></a>
+      <a class="flex items-center gap-3 text-gray-700 hover:text-slate-500" href="../logout.php"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
     </nav>
   </aside>
 
@@ -205,25 +183,26 @@ $result = $stmt->get_result();
                 </span>
               </td>
               <td class="px-6 py-4">
-  <?php if ($row['appointment_status'] === 'Pending') : ?>
-    <form method="POST" style="display:inline;">
-      <input type="hidden" name="appointment_id" value="<?= $row['appointment_id']; ?>">
-      <button type="submit" name="accept" class="bg-green-500 text-white px-4 py-2 rounded text-xs font-semibold">Accept</button>
-    </form>
+                <?php if ($row['appointment_status'] === 'Pending') : ?>
+                  <div class="flex items-center gap-2">
+                    <form method="POST">
+                      <input type="hidden" name="appointment_id" value="<?= $row['appointment_id']; ?>">
+                      <button type="submit" name="accept" class="bg-green-500 text-white px-3 py-2 rounded text-xs font-semibold hover:bg-green-600">Accept</button>
+                    </form>
 
-    <button class="cancel-btn bg-red-500 text-white px-4 py-2 rounded text-xs font-semibold ml-2" 
-      data-appointment-id="<?= $row['appointment_id']; ?>">
-      Cancel
-    </button>
+                    <button class="cancel-btn bg-red-500 text-white px-3 py-2 rounded text-xs font-semibold hover:bg-red-600"
+                      data-appointment-id="<?= $row['appointment_id']; ?>">
+                      Cancel
+                    </button>
+                  </div>
 
-  <?php elseif ($statusForFilter === 'upcoming') : ?>
-    <form method="POST" style="display:inline;">
-      <input type="hidden" name="appointment_id" value="<?= $row['appointment_id']; ?>">
-      <button type="submit" name="complete" class="bg-blue-600 text-white px-4 py-2 rounded text-xs font-semibold">Complete</button>
-    </form>
-  <?php endif; ?>
-</td>
-
+                <?php elseif ($statusForFilter === 'upcoming') : ?>
+                  <form method="POST">
+                    <input type="hidden" name="appointment_id" value="<?= $row['appointment_id']; ?>">
+                    <button type="submit" name="complete" class="bg-blue-600 text-white px-4 py-2 rounded text-xs font-semibold hover:bg-blue-700">Complete</button>
+                  </form>
+                <?php endif; ?>
+              </td>
 
             </tr>
           <?php endwhile; ?>

@@ -34,7 +34,7 @@ if (isset($_GET['service'])) {
     </div>';
  }
         } else {
-            echo "No employees available for this service specialization.";
+            echo "No employees available for this service.";
         }
     } else {
         echo "Service not found.";

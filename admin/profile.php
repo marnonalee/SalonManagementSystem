@@ -16,7 +16,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $new_username = trim($_POST['username']);
     $new_password = $_POST['new_password'] ?? '';
     $confirm_password = $_POST['confirm_password'] ?? '';
+    $old_password = $_POST['old_password'] ?? '';
 
+    // Update username if changed
     if ($new_username !== $admin_username) {
         $stmt = $conn->prepare("SELECT COUNT(*) FROM admins WHERE username = ?");
         $stmt->bind_param("s", $new_username);
@@ -41,19 +43,37 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
     }
 
+    // Update password if new password is provided
     if (!$error && !empty($new_password)) {
-        if ($new_password !== $confirm_password) {
-            $error = "Passwords do not match!";
+        if (empty($old_password)) {
+            $error = "Please enter your old password to change it.";
         } else {
-            $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
-            $stmt = $conn->prepare("UPDATE admins SET password = ? WHERE username = ?");
-            $stmt->bind_param("ss", $hashed_password, $admin_username);
-            if ($stmt->execute()) {
-                $success_message .= ($success_message ? " " : "") . "Password updated successfully!";
-            } else {
-                $error = "Failed to update password.";
-            }
+            // Get current hashed password
+            $stmt = $conn->prepare("SELECT password FROM admins WHERE username = ?");
+            $stmt->bind_param("s", $admin_username);
+            $stmt->execute();
+            $stmt->bind_result($current_hashed_password);
+            $stmt->fetch();
             $stmt->close();
+
+            // Verify old password
+            if (!password_verify($old_password, $current_hashed_password)) {
+                $error = "Old password is incorrect!";
+            } else {
+                if ($new_password !== $confirm_password) {
+                    $error = "Passwords do not match!";
+                } else {
+                    $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
+                    $stmt = $conn->prepare("UPDATE admins SET password = ? WHERE username = ?");
+                    $stmt->bind_param("ss", $hashed_password, $admin_username);
+                    if ($stmt->execute()) {
+                        $success_message .= ($success_message ? " " : "") . "Password updated successfully!";
+                    } else {
+                        $error = "Failed to update password.";
+                    }
+                    $stmt->close();
+                }
+            }
         }
     }
 
@@ -71,26 +91,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <link rel="stylesheet" href="styles.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-        .rule {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .rule .icon {
-            width: 16px;
-            height: 16px;
-        }
-        .rule.valid .icon {
-            color: green;
-        }
-        .rule.invalid .icon {
-            color: red;
-        }
-    </style>
+   
 </head>
 <body class="bg-white text-gray-900">
     <div class="flex min-h-screen">
@@ -148,6 +149,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <div class="border-t pt-4 mt-4">
                         <h4 class="text-sm font-semibold text-gray-800 mb-3">Change Password <span class="text-xs text-gray-500">(optional)</span></h4>
                         <div class="grid grid-cols-1 gap-4">
+                            <div>
+                                <label class="block text-sm text-gray-700 mb-1">Old Password</label>
+                                <input type="password" name="old_password" id="old_password" maxlength="50"
+                                    class="w-full px-3 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-slate-400 focus:outline-none text-sm"
+                                    autocomplete="current-password"
+                                >
+                            </div>
                             <div>
                                 <label class="block text-sm text-gray-700 mb-1">New Password</label>
                                 <input type="password" name="new_password" id="new_password" maxlength="50"

@@ -18,9 +18,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cancel'], $_POST['app
     $resultCheck = $stmtCheck->get_result();
 
     if ($resultCheck->num_rows === 1) {
-        $updateSql = "UPDATE appointments SET appointment_status = 'Cancelled' WHERE appointment_id = ?";
+        $cancel_reason = "Cancelled by the employee";
+
+        $updateSql = "UPDATE appointments SET appointment_status = 'Cancelled', cancel_reason = ? WHERE appointment_id = ?";
         $stmtUpdate = $conn->prepare($updateSql);
-        $stmtUpdate->bind_param("i", $appointment_id);
+        $stmtUpdate->bind_param("si", $cancel_reason, $appointment_id);
+
         if ($stmtUpdate->execute()) {
             $_SESSION['message'] = "Appointment cancelled successfully.";
         } else {

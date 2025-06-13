@@ -74,24 +74,19 @@ $todaysAppointments = $row['total'];
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Admin Dashboard</title>
+    <title>Dashboard - Admin</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="styles.css" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-      body {
-        font-family: 'Inter', sans-serif;
-      }
-    </style>
 </head>
 <body class="bg-white text-gray-900">
 
   <div class="flex min-h-screen">
   <aside class="w-64 h-screen fixed left-0 top-0 border-r border-gray-200 flex flex-col px-6 py-8 bg-white z-20">
         <div class="flex items-center space-x-2 mb-4">
-            <img src="img1.png" alt="User avatar" class="w-8 h-8 rounded-full object-cover" />
+        <img src="img1.png" alt="User avatar" class="w-8 h-8 rounded-full object-cover" />
             <span class="text-slate-700 font-semibold text-2xl tracking-wide top-0">Welcome <?php echo htmlspecialchars($admin_username); ?></span>
         </div>
 
